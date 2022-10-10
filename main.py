@@ -9,13 +9,13 @@ from pydantic import BaseSettings, Field
 
 
 class Settings(BaseSettings):
-    kafka_bootstrap_servers: str = Field(..., env="kafka.bootstrap_servers")
-    kafka_topic: str = Field(..., env="kafka.topic")
-    kafka_message: str = Field(..., env="kafka.message")
-    kafka_timeout: int = Field(..., env="kafka.timeout")
+    kafka_bootstrap_servers: str = Field("broker:9092", env="KAFKA_BOOTSTRAP_SERVERS")
+    kafka_topic: str = Field("tick", env="KAFKA_TOPIC")
+    kafka_message: str = Field("tick!", env="KAFKA_MESSAGE")
+    kafka_timeout: int = Field(10, env="KAFKA_TIMEOUT")  # in minutes
 
-    interval_min: int = Field(..., env="interval.min")
-    interval_max: int = Field(..., env="interval.max")
+    interval_min: int = Field(60, env="INTERVAL_MIN")  # in seconds
+    interval_max: int = Field(120, env="INTERVAL_MAX")  # in seconds
 
     class Config:
         env_file = ".env"
