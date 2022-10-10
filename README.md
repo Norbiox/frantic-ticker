@@ -24,5 +24,13 @@ python main.py
 
 ### Using Docker
 ```bash
-docker run --network host norbiox/frantic_ticker
+docker run \
+    --network host \
+    -e KAFKA_BOOTSTRAP_SERVERS="broker:9092" \
+    -e KAFKA_TOPIC="tick" \
+    -e KAFKA_MESSAGE="tick!" \
+    -e KAFKA_TIMEOUT=10 \
+    -e INTERVAL_MIN=5 \
+    -e INTERVAL_MAX=20 \
+    norbiox/frantic_ticker
 ```
