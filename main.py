@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     interval_min: int = Field(60, env="INTERVAL_MIN")  # in seconds
     interval_max: int = Field(120, env="INTERVAL_MAX")  # in seconds
+    log_file: str = Field("frantic-ticker.log", env="LOG_FILE")
 
     class Config:
         env_file = ".env"
@@ -24,18 +25,21 @@ class Settings(BaseSettings):
 
 if __name__ == "__main__":
     settings = Settings()
+    logger.add(settings.log_file, rotation="00:00")
+
+    logger.info("Setting up kafka connection...")
     producer = KafkaProducer(bootstrap_servers=settings.kafka_bootstrap_servers)
 
     while True:
-        logger.debug("Sending message...")
+        logger.info("Sending message...")
         future = producer.send(settings.kafka_topic, settings.kafka_message.encode("utf-8"))
         try:
             record_metadata = future.get(timeout=settings.kafka_timeout)
         except KafkaError:
             logger.exception(record_metadata)
         else:
-            logger.debug("Message sent")
+            logger.info("Message sent")
 
         interval = random.randint(settings.interval_min, settings.interval_max)
-        logger.debug("Waiting {interval} seconds...", interval=interval)
+        logger.info("Waiting {interval} seconds...", interval=interval)
         sleep(interval)
